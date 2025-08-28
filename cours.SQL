@@ -1,6 +1,6 @@
 # Dans le terminal de docker :
 
-# Pour écrire en bash :
+# Pour écrire en bash pour être en bash :
 -- bash
 
 # Pour la connection à mariadb :
@@ -11,7 +11,7 @@ USE ma_base_de_donnees;
 
 -- Voir les tables dans la base de données : 
 
-SHOW database;
+SHOW databases;
 
 -- Création d'une table :
 CREATE TABLE utilisateurs (
@@ -50,3 +50,16 @@ WHERE age > 19;
 
 SELECT * FROM `user`
 WHERE `nom` = 'Alice';
+
+--Ajouter un champ
+ALTER TABLE `pseudo`
+ADD id_user INT;
+
+--Ajouter la Foreign KEY
+ALTER TABLE `pseudo`
+FOREIGN KEY (id_user) REFERENCES user(id);
+
+--Jointure de deux tables
+SELECT *
+FROM `user`
+INNER JOIN `pseudo` ON `user`.`id` = `pseudo`.`id_user`;
