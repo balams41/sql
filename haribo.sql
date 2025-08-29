@@ -261,49 +261,81 @@ ORDER BY `gender` ASC, `color_eyes` ASC;
 --34-- Compter le nombre de users
    SELECT COUNT(*) FROM `user`;
 --35-- Compter le nombre de users hommes mais en changeant le nom de la colonne de résultat par *nb_users_H*
-
-
+ SELECT COUNT(*) AS `nb_users_H`
+ FROM `user`
+WHERE `gender`='h';
 --36-- Compter le nombre de couleurs d'yeux différentes
-
-
+  SELECT COUNT(DISTINCT `color_eyes`) FROM `user`;
 --37-- Afficher le prénom et les yeux du user qui a l'id le plus petit
+   SELECT MIN(`id_user`), `name`, `color_eyes`
+  FROM `user`;
 
 
 --38-- Afficher le prénom et les yeux du user qui a l'id le plus grand /!\ 
---c'est une requête imbriquée qu'il faut faire (requête sur le résultat d'une autre requête)
-
-
+--c'est une requête imbriquée qu'il faut faire (requête sur le résultat d'une autre requête) 
+SELECT `name`,`color_eyes` FROM `user` WHERE `id_user`= (SELECT MAX(`id_user`) FROM `user`);
 --39-- Afficher les users qui ont les yeux bleu et vert
-
-
+ SELECT `name`, `color_eyes`
+  FROM `user`
+  WHERE `color_eyes` = 'bleu' OR `color_eyes` = 'vert';
 --40-- A l'inverse maintenant, afficher les users qui n'ont pas les yeux bleu ni vert
-
-
+ SELECT * FROM `user` WHERE `color_eyes` !=  'bleu' OR `color_eyes` != 'vert';
 --41-- récupérer tous les users qui ont mangé des bonbons, avec le détail de leurs consommations
-
+  SELECT * FROM `user`
+  RIGHT JOIN `eat`
+   ON `user`.`id_user` = `eat`.`id_user`; 
 
 --42-- récupérer que les users qui ont mangé des bonbons, avec le détail de leurs consommations
-
-
+ SELECT `user`.`name`AS `prenom` , `candy`.`name`, `eat`.`quantity` 
+FROM `eat`
+INNER JOIN `user`
+ON `eat`.`id_user` = `user`.`id_user`
+INNER JOIN `candy`
+ON `eat`.`id_candy` = `candy`.`id_candy`;
 --43-- prénom du user, le nom du bonbon, la date de consommation pour tous les users qui ont mangé au moins une fois
-
-
+SELECT `user`.`name`AS `prenom` , `candy`.`name`, `eat`.`date_eat` 
+FROM `eat`
+INNER JOIN `user`
+ON `eat`.`id_user` = `user`.`id_user`
+INNER JOIN `candy`
+ON `eat`.`id_candy` = `candy`.`id_candy`;
 --44-- Afficher les quantités consommées par les users (uniquement ceux qui ont mangé !)
-
+SELECT `user`.`name`AS `prenom` , `candy`.`name`, `eat`.`date_eat` 
+FROM `eat`
+INNER JOIN `user`
+ON `eat`.`id_user` = `user`.`id_user`
+INNER JOIN `candy`
+ON `eat`.`id_candy` = `candy`.`id_candy`;
 
 --45-- Calculer combien de bonbons ont été mangés au total par chaque user et afficher le nombre de fois où ils ont mangé
-
+SELECT `user`.`name`AS `prenom` , `candy`.`name`, SUM(`eat`.`quantity`) 
+FROM `eat`
+INNER JOIN `user`
+ON `eat`.`id_user` = `user`.`id_user`
+INNER JOIN `candy`
+ON `eat`.`id_candy` = `candy`.`id_candy`;
 
 --46-- Afficher combien de bonbons ont été consommés au total
-
+SELECT SUM(`quantity`) AS `total` FROM `eat`;
 
 --47-- Afficher le total de *Tagada* consommées
 
+SELECT SUM(`quantity`) AS `total` FROM `eat` 
+INNER JOIN `candy`
+ON `eat`.`id_candy` = `candy`.`id_candy`
+WHERE `candy`.`name` = 'tagada';
 
 --48-- Afficher les prénoms des users qui n'ont rien mangé
-
+SELECT `name` FROM `user`
+WHERE `id_user` NOT IN (SELECT `id_user` FROM `eat`);
 
 --49-- Afficher les saveurs des bonbons (sans doublons)
+SELECT DISTINCT `flavor` FROM `candy`;
 
-
---50-- Afficher le prénom du user qui a mangé le plus de b
+--50-- Afficher le prénom du user qui a mangé le plus de bonbons
+SELECT `user`.`name`, `eat`.`quantity`
+FROM `eat`
+INNER JOIN `user`
+ON `eat`.`id_user` = `user`.`id_user`
+ORDER BY SUM(`eat`.`quantity`) DESC 
+LIMIT 1; 
